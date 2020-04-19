@@ -6,13 +6,10 @@ var requestStream = Rx.Observable.create(o => {
 
 requestStream.subscribe(function(requestUrl) {
   // execute the request
-  var responseStream = Rx.Observable.create(function (observer) {
-    jQuery.getJSON(requestUrl)
-    .done(function(response) { observer.onNext(response); })
-    .fail(function(jqXHR, status, error) { observer.onError(error); })
-    .always(function() { observer.onCompleted(); });
+  var responseStream = requestStream.flatMap(function(requestUrl) {
+    return Rx.Observable.fromPromise(jQuery.getJSON(requestUrl));
   });
-  
+
   responseStream.subscribe(function(response) {
     console.log(`Do something with the ${response.length} items returned.`);
     console.log(response);
