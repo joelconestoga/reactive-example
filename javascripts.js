@@ -6,11 +6,7 @@ var requestStream = refreshClickStream
     var randomOffset = Math.floor(Math.random()*500);
     return 'https://api.github.com/users?since=' + randomOffset;
   })
-  .merge(Rx.Observable.create(o => {
-    o.onNext('https://api.github.com/users');
-    o.onCompleted();
-  })
-);
+  .startWith('https://api.github.com/users');
 
 requestStream.subscribe(function(requestUrl) {
   // execute the request
