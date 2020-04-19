@@ -1,18 +1,15 @@
 var refreshButton = document.querySelector('.refresh');
 var refreshClickStream = Rx.Observable.fromEvent(refreshButton, 'click');
 
-var requestOnRefreshStream = refreshClickStream.map(function() {
-  var randomOffset = Math.floor(Math.random()*500);
-  return 'https://api.github.com/users?since=' + randomOffset;
-});
-
-var startupRequestStream = Rx.Observable.create(o => {
-  o.onNext('https://api.github.com/users');
-  o.onCompleted();
-});
-
-var requestStream = Rx.Observable.merge(
-  requestOnRefreshStream, startupRequestStream
+var requestStream = refreshClickStream
+  .map(function() {
+    var randomOffset = Math.floor(Math.random()*500);
+    return 'https://api.github.com/users?since=' + randomOffset;
+  })
+  .merge(Rx.Observable.create(o => {
+    o.onNext('https://api.github.com/users');
+    o.onCompleted();
+  })
 );
 
 requestStream.subscribe(function(requestUrl) {
