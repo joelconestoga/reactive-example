@@ -1,8 +1,15 @@
+var refreshButton = document.querySelector('.refresh');
+var refreshClickStream = Rx.Observable.fromEvent(refreshButton, 'click');
 
-var requestStream = Rx.Observable.create(o => {
-  o.onNext('https://api.github.com/users');
-  o.onCompleted();
+var requestStream = refreshClickStream.map(function() {
+  var randomOffset = Math.floor(Math.random()*500);
+  return 'https://api.github.com/users?since=' + randomOffset;
 });
+
+// var requestStream = Rx.Observable.create(o => {
+//   o.onNext('https://api.github.com/users');
+//   o.onCompleted();
+// });
 
 requestStream.subscribe(function(requestUrl) {
   // execute the request
